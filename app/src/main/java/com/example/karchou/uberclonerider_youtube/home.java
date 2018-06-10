@@ -6,8 +6,15 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -24,6 +32,12 @@ import com.google.android.gms.maps.model.MarkerOptions;
 public class home extends FragmentActivity implements OnMapReadyCallback,NavigationDrawerFragment.NavigationDrawerCallbacks{
 
     private GoogleMap mMap;
+    LocationManager locationManager;
+    LocationListener locationListener;
+    LatLng userlocation;
+    double currentlat;
+    double currentlong;
+    private Location mlocation;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -44,6 +58,10 @@ public class home extends FragmentActivity implements OnMapReadyCallback,Navigat
         MapFragment mapFragment = new MapFragment();
         FragmentTransaction transaction =getFragmentManager().beginTransaction();
         transaction.add(R.id.map, mapFragment).commit();
+        mapFragment.getMapAsync(this);
+
+        /*  MapFragment mapFragment=(MapFragment) getFragmentManager().findFragmentById(R.id.map); */
+
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -93,13 +111,74 @@ public class home extends FragmentActivity implements OnMapReadyCallback,Navigat
     @Override
     public void onMapReady(GoogleMap googleMap) {
       mMap=googleMap;
-        // Add a marker in Sydney and move the camera
-      LatLng sydney = new LatLng(-22, 115);
-      mMap.addMarker(new MarkerOptions().position(sydney).title("This is not AAMU"));
-      mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-      mMap.addMarker(new MarkerOptions()
-             .position(new LatLng(34.782, -86.569))
-             .title("You"));
+      mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+      mMap.setTrafficEnabled(false);
+      mMap.setIndoorEnabled(false);
+      mMap.setBuildingsEnabled(false);
+      mMap.getUiSettings().setZoomControlsEnabled(true);
+      mMap.getUiSettings().setCompassEnabled(true);
+      mMap.getUiSettings().setScrollGesturesEnabled(true);
+
+      locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+
+      locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                UpdateMap(location);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+
+            }
+
+            @Override
+            public void onProviderEnabled(String provider) {
+
+            }
+
+            @Override
+            public void onProviderDisabled(String provider) {
+
+            }
+        };
+
+
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }else
+        {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+            mlocation= locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            if (mlocation !=null) {
+                UpdateMap(mlocation);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode==1) {
+            if (grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED) {
+                if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+                     mlocation= locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                    if (mlocation !=null) {
+                        UpdateMap(mlocation);
+                    }
+                }
+            }
+        }
+    }
+
+    private void UpdateMap(Location mlocation) {
+
+        userlocation = new LatLng(mlocation.getLatitude(), mlocation.getLongitude());
+        mMap.clear();
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(userlocation,13));
+        mMap.addMarker(new MarkerOptions().position(userlocation).title("Your Location"));
     }
 
     /**

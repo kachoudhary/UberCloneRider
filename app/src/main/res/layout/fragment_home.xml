@@ -12,35 +12,33 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-<LinearLayout
-
-    android:elevation="15dp"
-    android:id="@+id/placeholder_location"
-    android:weightSum="6"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_margin="15dp"
-    android:layout_alignParentTop="true">
-
-    <fragment
-       android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/place_location"
-        android:layout_weight="3"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-        android:hint="Enter Pickup Location"
-        />
-
-    <fragment
+    <LinearLayout
+        android:id="@+id/placeholder_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/place_location2"
-        android:layout_weight="3"
-        android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-        android:hint="Enter Drop Location"
-        />
-</LinearLayout>
+        android:layout_alignParentTop="true"
+        android:layout_margin="15dp"
+        android:background="@android:color/background_light"
+        android:elevation="15dp"
+        android:orientation="vertical"
+        android:weightSum="6">
+
+        <fragment
+            android:id="@+id/place_location"
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="Enter Pickup Location" />
+
+        <fragment
+            android:id="@+id/place_location2"
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:hint="Enter Drop Location" />
+    </LinearLayout>
 
 </fragment>
 
