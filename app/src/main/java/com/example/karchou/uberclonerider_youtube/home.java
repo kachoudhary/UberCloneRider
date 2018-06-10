@@ -18,7 +18,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class Home extends Activity
+public class home extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
 
     /**
@@ -111,7 +111,7 @@ public class Home extends Activity
         @Override
         public void onAttach(Activity activity) {
             super.onAttach(activity);
-            ((Home) activity).onSectionAttached(
+            ((home) activity).onSectionAttached(
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }

@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
                             @Override
                             public void onSuccess(AuthResult authResult) {
                                 waitingdialog.dismiss();
-                                startActivity(new Intent(MainActivity.this,welcome.class));
+                                startActivity(new Intent(MainActivity.this,home.class));
                                 finish();
                             }
                         })

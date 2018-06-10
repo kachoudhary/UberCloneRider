@@ -36,10 +36,7 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".welcome"
-            android:label="@string/title_activity_welcome" />
-        <activity
-            android:name=".Home"
+            android:name=".home"
             android:label="@string/title_activity_home"></activity>
     </application>
 
