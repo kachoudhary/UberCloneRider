@@ -1,6 +1,5 @@
 package com.example.karchou.uberclonerider_youtube.model;
 
-
 public class User {
 
     private String email,password,name,phone;
@@ -48,4 +47,3 @@ public class User {
         this.phone = phone;
     }
 }
-
