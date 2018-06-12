@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.geofire.GeoFire;
@@ -81,19 +82,18 @@ public class home extends FragmentActivity implements OnMapReadyCallback,Navigat
     LocationManager locationManager;
     LocationListener locationListener;
     LatLng userlocation;
-    DatabaseReference riders;
     public FirebaseDatabase database;
     double currentlat,currentlong;
     private LatLng startposition,endposition,currentposition;
     private Location mlocation;
     private LocationRequest mLocationRequest;
-    DatabaseReference drivers;
-    GeoFire geoFire;
+    DatabaseReference riders,dbrequest;
+    private GeoFire geoFire,mgeoFire;
     private GoogleApiClient mGoogleAPIclinet;
-    Marker mCurrent,carMarker;
+    Marker mCurrent,carMarker,mUsermarker;
     private static final int MY_PERMISSION_REQUEST_CODE= 7000;
     private static final int PLAY_SERVICE_RES_REQUEST=7001;
-
+    private Button btnpickuprequest;
     private static int UPDATE_INTERVAL=5000;
     private static int FASTES_INTERVAL=3000;
     private static int DISPLACEMENT=10;
@@ -183,6 +183,7 @@ public class home extends FragmentActivity implements OnMapReadyCallback,Navigat
 
         riders= FirebaseDatabase.getInstance().getReference("Riders");
 
+
         mapFragment = new MapFragment();
         transaction1 =getFragmentManager().beginTransaction();
         transaction1.replace(R.id.map, mapFragment).commit();
@@ -199,6 +200,13 @@ public class home extends FragmentActivity implements OnMapReadyCallback,Navigat
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
+        btnpickuprequest=(Button)findViewById(R.id.btnnpickuprequest);
+        btnpickuprequest.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+             requestpickuphere(FirebaseAuth.getInstance().getCurrentUser().getUid());
+            }
+        });
 
         startlocationUpdates();
         polylinelist=new ArrayList<>();
@@ -242,7 +250,25 @@ public class home extends FragmentActivity implements OnMapReadyCallback,Navigat
         mService= Common.getGoogleAPI();
     }
 
-     private void getDirection() {
+    private void requestpickuphere(String uid) {
+        dbrequest=FirebaseDatabase.getInstance().getReference("PickupRequest");
+        geoFire=new GeoFire(dbrequest);
+        mgeoFire.setLocation(uid,new GeoLocation(mlocation.getLatitude(),mlocation.getLongitude()));
+
+        if (mCurrent.isVisible())
+            mCurrent.remove();
+        if (carMarker.isVisible())
+            carMarker.remove();
+
+        mUsermarker= mMap.addMarker(new MarkerOptions()
+                          .title("Pickup here").snippet("")
+                          .position(new LatLng(mlocation.getLatitude(),mlocation.getLongitude()))
+                          .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+        mUsermarker.showInfoWindow();
+        btnpickuprequest.setText("Getting your driver");
+    }
+
+    private void getDirection() {
 
             currentposition=new LatLng(mlocation.getLatitude(),mlocation.getLongitude());
             String requestAPI=null;
@@ -326,6 +352,9 @@ public class home extends FragmentActivity implements OnMapReadyCallback,Navigat
                             });
 
                             polyLineanimator.start();
+
+                            if (mCurrent.isVisible())
+                                mCurrent.remove();
 
                             carMarker=mMap.addMarker(new MarkerOptions().position(currentposition)
                                     .flat(true)

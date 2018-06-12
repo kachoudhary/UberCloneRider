@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".home$PlaceholderFragment">
+    tools:context=".home$PlaceholderFragment"
+    android:orientation="vertical"
+    android:weightSum="10.00"
+    >
 
 <fragment
+        android:layout_weight="9.00"
         android:id="@+id/map"
         android:layout_margin="0dp"
         android:name="com.google.android.gms.maps.MapFragment"
@@ -39,7 +43,17 @@
             android:layout_weight="3"
             android:hint="Enter Drop Location" />
     </LinearLayout>
-
 </fragment>
 
-</RelativeLayout>
+    <Button
+        android:id="@+id/btnnpickuprequest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_weight="1.00"
+        android:background="@android:color/black"
+        android:text="Request Pickup"
+        android:textAlignment="center"
+        android:textColor="@android:color/background_light" />
+
+</LinearLayout>
